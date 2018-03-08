@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/LearningKotlin.iml" filepath="$PROJECT_DIR$/LearningKotlin.iml" />
-      <module fileurl="file://$PROJECT_DIR$/quicksave/QuickSave.iml" filepath="$PROJECT_DIR$/quicksave/QuickSave.iml" />
+      <module fileurl="file://$PROJECT_DIR$/quicksave/quicksave.iml" filepath="$PROJECT_DIR$/quicksave/quicksave.iml" />
     </modules>
   </component>
 </project>
