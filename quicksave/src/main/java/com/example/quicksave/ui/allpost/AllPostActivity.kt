@@ -23,24 +23,21 @@ class AllPostActivity : AppCompatActivity(), AllPostContract.View {
     lateinit var adapter: AllPostAdapter
     lateinit var allPostPresenter: AllPostPresenter
 
+    val arrayPermissions = arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_all_post)
 
-        checkPermissions()
+        PermissionHelper.checkPermission(arrayPermissions, this)
 
         initView()
 
         allPostPresenter = AllPostPresenter(this)
         allPostPresenter.startPresenter()
 
-    }
-
-    private fun checkPermissions() {
-        PermissionHelper.checkPermission(arrayOf(
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                this)
     }
 
     override fun initView() {
@@ -164,5 +161,15 @@ class AllPostActivity : AppCompatActivity(), AllPostContract.View {
     override fun onStop() {
         super.onStop()
         allPostPresenter.stopPresenter()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when(requestCode) {
+            PermissionHelper.PERMISSION_REQUEST -> {
+                if (grantResults.isNotEmpty() && !PermissionHelper.permissionGranted(arrayPermissions, this)) {
+                    PermissionHelper.checkPermission(arrayPermissions, this)
+                }
+            }
+        }
     }
 }
