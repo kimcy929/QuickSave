@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#006fff</color>
+    <color name="colorPrimaryDark">#005bef</color>
+    <color name="colorAccent">#ff0066</color>
+
+    <color name="bufferedColor">#ffffff</color>
+    <color name="playedColor">#FE1743</color>
+    <color name="scrubberColor">#FE1743</color>
+    <color name="unplayedColor">#808080</color>
+
+    <color name="colorStatusBarVisible">#939393</color>
+    <color name="colorStatusBarTranslucent">#46000000</color>
+
+</resources>

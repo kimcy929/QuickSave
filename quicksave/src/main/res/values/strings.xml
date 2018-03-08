@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Quick Save</string>
+    <string name="open_instagram">Open Instagram</string>
+    <string name="share_to">Share via</string>
+    <string name="copied_caption">Copied the caption!</string>
+    <string name="error_download">Error save file: %1$s</string>
+    <string name="saved">Saved to %1$s</string>
+</resources>
