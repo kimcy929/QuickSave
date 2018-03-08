@@ -11,5 +11,6 @@
 
     <color name="colorStatusBarVisible">#939393</color>
     <color name="colorStatusBarTranslucent">#46000000</color>
+    <color name="colorBorderProfile">#cccccc</color>
 
 </resources>

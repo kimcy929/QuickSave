@@ -2,4 +2,5 @@
 <resources>
     <dimen name="vertical_divider">16dp</dimen>
     <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="image_profile_max_size">32dp</dimen>
 </resources>
