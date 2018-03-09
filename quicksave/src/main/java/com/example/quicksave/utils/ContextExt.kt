@@ -2,6 +2,7 @@ package com.example.quicksave.utils
 
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.widget.Toast
 
 /**
@@ -23,6 +24,12 @@ fun Context.toast(message: String? = null, length: Int = Toast.LENGTH_SHORT) {
     message?.apply {
         Toast.makeText(this@toast, message, length).show()
     }
+}
+
+fun Context.hasInternet(): Boolean {
+    val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val networkInfo = connectivityManager.activeNetworkInfo
+    return networkInfo?.isAvailable ?: false
 }
 
 
