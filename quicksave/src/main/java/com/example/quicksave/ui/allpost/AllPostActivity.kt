@@ -23,9 +23,11 @@ class AllPostActivity : AppCompatActivity(), AllPostContract.View {
     lateinit var adapter: AllPostAdapter
     lateinit var allPostPresenter: AllPostPresenter
 
-    val arrayPermissions = arrayOf(
+    private val arrayPermissions = arrayOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+    private var statusBarSize: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,8 +84,6 @@ class AllPostActivity : AppCompatActivity(), AllPostContract.View {
             }
         }
     }
-
-    private var statusBarSize: Int = 0
 
     private fun handleWindowInsets() {
 
@@ -158,12 +158,7 @@ class AllPostActivity : AppCompatActivity(), AllPostContract.View {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
 
         when (item?.itemId) {
-
             R.id.action_open_instagram -> openApp("com.instagram.android")
-
-            else -> {
-
-            }
         }
 
         return true
