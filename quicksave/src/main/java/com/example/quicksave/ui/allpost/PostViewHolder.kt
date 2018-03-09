@@ -14,7 +14,6 @@ import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.photo_item.*
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
-import timber.log.Timber
 import java.io.File
 
 
