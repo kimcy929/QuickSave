@@ -14,6 +14,7 @@ import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.photo_item.*
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import timber.log.Timber
 import java.io.File
 
 
@@ -28,6 +29,16 @@ class PostViewHolder(override val containerView: View?) : RecyclerView.ViewHolde
 
     private fun getMimeType(isVideo: Boolean) = if (isVideo) "video/mp4" else "image/jpg"
 
+    private fun checkInternetConnection() : Boolean {
+        val context = MyApp.INSTANCE
+        return if (context.hasInternet()) {
+            true
+        } else {
+            context.toast(context.getString(R.string.no_internet_connection))
+            false
+        }
+    }
+
     fun bindTo(postInfo: PostInfo?) {
         this.postInfo = postInfo
         this.postInfo?.apply {
@@ -40,12 +51,15 @@ class PostViewHolder(override val containerView: View?) : RecyclerView.ViewHolde
             videoIndicator.show(isVideo)
 
             btnSave.setOnClickListener {
+                if (!checkInternetConnection()) return@setOnClickListener
+
                 val url = if (isVideo) videoUrl!! else displayUrl!!
                 val mimeType = getMimeType(isVideo)
                 DownloadHelper.downloadFile(url, mimeType)
             }
 
             btnShare.setOnClickListener {
+                if (!checkInternetConnection()) return@setOnClickListener
 
                 val url = if (isVideo) videoUrl!! else displayUrl!!
 
@@ -73,6 +87,7 @@ class PostViewHolder(override val containerView: View?) : RecyclerView.ViewHolde
             }
 
             btnRepost.setOnClickListener {
+                if (!checkInternetConnection()) return@setOnClickListener
 
                 val url = if (isVideo) videoUrl!! else displayUrl!!
 
