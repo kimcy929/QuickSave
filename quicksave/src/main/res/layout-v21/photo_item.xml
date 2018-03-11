@@ -21,6 +21,7 @@
     android:background="@android:color/white"
     android:elevation="1dp"
     android:translationZ="2dp"
+    android:id="@+id/photoItem"
     tools:context="com.example.quicksave.ui.allpost.AllPostActivity">
 
     <ImageView

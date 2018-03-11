@@ -5,7 +5,6 @@ import android.support.v4.content.FileProvider
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.example.quicksave.BuildConfig
-import com.example.quicksave.MyApp
 import com.example.quicksave.R
 import com.example.quicksave.data.source.local.entity.PostInfo
 import com.example.quicksave.ui.videoplayer.VideoPlayerActivity
@@ -29,7 +28,7 @@ class PostViewHolder(override val containerView: View?) : RecyclerView.ViewHolde
     private fun getMimeType(isVideo: Boolean) = if (isVideo) "video/mp4" else "image/jpg"
 
     private fun checkInternetConnection() : Boolean {
-        val context = MyApp.INSTANCE
+        val context = containerView!!.context
         return if (context.hasInternet()) {
             true
         } else {
@@ -44,86 +43,97 @@ class PostViewHolder(override val containerView: View?) : RecyclerView.ViewHolde
 
             instaImage.load(displayUrl)
             imageProfile.load(profilePicUrl, TransformationType.CIRCLE)
+
             txtUserName.text = username
 
             val isVideo = isVideo == 1
+
             videoIndicator.show(isVideo)
 
-            btnSave.setOnClickListener {
-                if (!checkInternetConnection()) return@setOnClickListener
+            btnSave.setOnClickListener(DetailsClickListener(isVideo))
 
-                val url = if (isVideo) videoUrl!! else displayUrl!!
-                val mimeType = getMimeType(isVideo)
-                DownloadHelper.downloadFile(url, mimeType)
-            }
+            btnShare.setOnClickListener(DetailsClickListener(isVideo))
 
-            btnShare.setOnClickListener {
-                if (!checkInternetConnection()) return@setOnClickListener
+            btnRepost.setOnClickListener(DetailsClickListener(isVideo))
 
-                val url = if (isVideo) videoUrl!! else displayUrl!!
+            imageProfile.setOnClickListener(DetailsClickListener())
 
-                launch(UI) {
-                    val mimeType = getMimeType(isVideo)
-                    val path = DownloadHelper.downloadAndShare(url, mimeType).await()
-                    path?.let {
-                        val context = MyApp.INSTANCE
-                        val uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", File(it))
+            photoItem.setOnClickListener(DetailsClickListener(isVideo))
+        }
+    }
 
-                        uri?.let {
-                            val captionPost = if (caption.isNullOrEmpty()) username else caption
-                            if (isVideo) {
-                                InstaUtils.shareVideo(context, uri)
-                            } else {
-                                InstaUtils.sharePhoto(context, uri)
+    inner class DetailsClickListener(private val isVideo: Boolean = false) : View.OnClickListener {
+
+        override fun onClick(v: View) {
+
+            if (!checkInternetConnection()) return@onClick
+
+            val url = if (isVideo) postInfo!!.videoUrl!! else postInfo!!.displayUrl!!
+            val mimeType = getMimeType(isVideo)
+
+            when(v.id) {
+
+                R.id.photoItem -> {
+                    if (isVideo) {
+                        val intent = newIntent<VideoPlayerActivity>(context = v.context)
+                        intent.putExtra("post_info", postInfo)
+                        v.context.startActivity(intent)
+                    }
+                }
+
+                R.id.imageProfile -> {
+                    InstaUtils.openProfileOnInstagramApp(v.context, postInfo!!.username!!)
+                }
+
+                R.id.btnRepost -> {
+                    launch(UI) {
+                        val path = DownloadHelper.downloadAndShare(url, mimeType).await()
+                        path?.let {
+                            val context = v.context
+
+                            val uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", File(it))
+
+                            uri?.let {
+                                val captionPost = if (postInfo!!.caption.isNullOrEmpty()) postInfo!!.username else postInfo!!.caption
+
+                                if (isVideo) {
+                                    InstaUtils.repostVideo(context, it, captionPost!!)
+                                } else {
+                                    InstaUtils.repostPhoto(context, it, captionPost!!)
+                                }
                             }
-                            InstaUtils.setCaption(context, captionPost!!)
-                            MyApp.INSTANCE.apply {
-                                toast(getString(R.string.copied_caption))
+                        }
+                    }
+                }
+
+                R.id.btnSave -> {
+                    DownloadHelper.downloadFile(url, mimeType)
+                }
+
+                R.id.btnShare -> {
+                    launch(UI) {
+                        val path = DownloadHelper.downloadAndShare(url, mimeType).await()
+                        path?.let {
+                            val context = v.context
+                            val uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", File(it))
+
+                            uri?.let {
+                                val captionPost = if (postInfo!!.caption.isNullOrEmpty()) postInfo!!.username else postInfo!!.caption
+                                if (isVideo) {
+                                    InstaUtils.shareVideo(context, uri)
+                                } else {
+                                    InstaUtils.sharePhoto(context, uri)
+                                }
+                                InstaUtils.setCaption(context, captionPost!!)
+                                context.apply {
+                                    toast(getString(R.string.copied_caption))
+                                }
                             }
                         }
                     }
                 }
             }
 
-            btnRepost.setOnClickListener {
-                if (!checkInternetConnection()) return@setOnClickListener
-
-                val url = if (isVideo) videoUrl!! else displayUrl!!
-
-                launch(UI) {
-                    val mimeType = getMimeType(isVideo)
-                    val path = DownloadHelper.downloadAndShare(url, mimeType).await()
-                    path?.let {
-                        val context = MyApp.INSTANCE
-
-                        val uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", File(it))
-
-                        uri?.let {
-                            val captionPost = if (caption.isNullOrEmpty()) username else caption
-
-                            if (isVideo) {
-                                InstaUtils.repostVideo(context, it, captionPost!!)
-                            } else {
-                                InstaUtils.repostPhoto(context, it, captionPost!!)
-                            }
-                        }
-                    }
-                }
-            }
-
-            imageProfile.setOnClickListener {
-                InstaUtils.openProfileOnInstagramApp(MyApp.INSTANCE, this.username!!)
-            }
-
-            itemView.setOnClickListener {
-                if (isVideo) {
-                    val intent = newIntent<VideoPlayerActivity>(context = itemView.context)
-                    intent.putExtra("post_info", this)
-                    itemView.context.startActivity(intent)
-                } else {
-
-                }
-            }
         }
     }
 }
